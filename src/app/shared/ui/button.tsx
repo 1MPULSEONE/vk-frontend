@@ -2,8 +2,9 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from '../lib/utils';
 
+
 const buttonVariants = cva(
-  "inline-flex items-center font-500 max-w-[16.75rem] justify-center gap-2 whitespace-nowrap rounded-12 text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 relative overflow-hidden",
+  "inline-flex items-center justify-center text-center font-500 max-w-[16.75rem] gap-2 whitespace-nowrap rounded-12 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 relative overflow-hidden",
   {
     variants: {
       variant: {
@@ -12,13 +13,16 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-9 px-3 py-2",
-        sm: "h-7 py-1.5 px-2.5  px-3 rounded-[0.5625rem]",
+        sm: "h-7 py-1.5 px-2.5 rounded-[0.5625rem]",
         lg: "h-12 rounded-[1rem] p-4",
         icon: "h-10 w-10",
       },
       disabled: {
-          true: "cursor-not-allowed opacity-[0.36]",
-          false: ""
+        true: "cursor-not-allowed opacity-[0.36]",
+        false: ""
+      },
+      focused: {
+        true: ''
       }
     },
     defaultVariants: {
@@ -36,26 +40,33 @@ export interface ButtonProps
   contentGroupClassName?: string;
   isLoading?: boolean;
   disabled?: boolean;
+  focused?: boolean; 
 }
 
-const ProgressIndicator = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-  </div>
-);
+const ProgressIndicator = ({ variant }: { variant: "default" | "secondary" }) => {
+  const borderColor = variant === "default" ? "border-white" : "border-black-500";
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className={`w-4 h-4 border-2 ${borderColor} border-t-transparent rounded-full animate-spin`}></div>
+    </div>
+  );
+};
 
 const Shimmer = () => (
   <div
-    className="absolute inset-y-0 left-0 w-1/3 bg-current opacity-[0.12]"
+    className="absolute inset-y-0 left-0 w-1/3"
     style={{
-      animation: "shimmer 1s linear infinite",
+      background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
+      animation: "shimmer 1.5s linear infinite",
     }}
   />
 );
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, onClick, asChild = false, children, contentGroupClassName, isLoading = false, disabled = false,  ...props }, ref) => {
+  ({ className, variant, size, onClick, asChild = false, children, contentGroupClassName, isLoading = false, disabled = false, focused, ...props }, ref) => {
     const [isPressed, setIsPressed] = React.useState(false);
+    const [isHovered, setIsHovered] = React.useState(false);
 
     const handlePointerDown = () => {
       if (!disabled) {
@@ -69,30 +80,51 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }
     };
 
-    const isDisabled = disabled || isLoading;
+    const handleMouseEnter = () => {
+      if (!disabled) {
+        setIsHovered(true);
+      }
+    };
+
+    const handleMouseLeave = () => {
+      if (!disabled) {
+        setIsHovered(false);
+      }
+    };
+
+    const isDisabled = disabled;
 
     return (
       <button
         className={cn(
           buttonVariants({ variant, size, className, disabled: isDisabled }),
-          "group items-center justify-between",
-          isPressed && !isDisabled ? "scale-[0.95] transition-transform duration-[500ms] ease-[cubic-bezier(0,-0.3,0.5,1.3)]" : "",
+          "group relative",
+          isPressed && !isDisabled ? "scale-[0.95] transition-transform duration-[500ms] ease-[cubic-bezier(0,-0.3,0.5,1.3)]" : ""
         )}
         ref={ref}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         disabled={isDisabled}
         onClick={onClick}
         {...props}
       >
+        {isHovered && !isDisabled && (
+          <div
+            className="absolute inset-0 bg-current opacity-[0.12]"
+          />
+        )}
+
         {isLoading && (
           <>
-            <ProgressIndicator />
+            <ProgressIndicator variant={variant || "default"} />
             <Shimmer />
           </>
         )}
-        {isPressed && !isDisabled && (
+
+        {isPressed && !isDisabled && !isLoading && (
           <span
             className="absolute inset-0 bg-current opacity-[0.20] transition-transform duration-[500ms] ease-[cubic-bezier(0,-0.3,0.5,1.3)] rounded-12"
             style={{
@@ -100,10 +132,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
           />
         )}
-       {<span className={cn(contentGroupClassName, isLoading ? "opacity-0" : "opacity-100", !isDisabled ? "group-hover:scale-[1.05] group-hover:transition-transform group-hover:duration-[500ms] group-hover:ease-[cubic-bezier(0,-0.3,0.5,1.3)]" : "")}>
+
+        <span
+          className={cn(
+            contentGroupClassName,
+            isLoading ? "opacity-0" : "opacity-100",
+            !isDisabled && "transition-transform duration-[500ms] ease-[cubic-bezier(0,-0.3,0.5,1.3)]",
+            isHovered && !isDisabled && "scale-[1.05]"
+          )}
+        >
           {children}
-        </span>}
-        <span></span>
+        </span>
       </button>
     );
   }
