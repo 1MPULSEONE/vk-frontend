@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from '../lib/utils';
+import { NotificationBadge } from './counter';
 
 
 const buttonVariants = cva(
@@ -40,7 +41,15 @@ export interface ButtonProps
   contentGroupClassName?: string;
   isLoading?: boolean;
   disabled?: boolean;
-  focused?: boolean; 
+  focused?: boolean;
+  notificationBadge?: {
+    quantity: number | string;
+    variant?: "primary" | "secondary";
+    size?: 8 | 12 | 16 | 20 | 24;
+    stroke?: boolean;
+    strokeType?: "dynamic" | "surface" | "base" | "secondary";
+    pulse?: boolean;
+  };
 }
 
 const ProgressIndicator = ({ variant }: { variant: "default" | "secondary" }) => {
@@ -64,7 +73,23 @@ const Shimmer = () => (
 );
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, onClick, asChild = false, children, contentGroupClassName, isLoading = false, disabled = false, focused, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      onClick,
+      asChild = false,
+      children,
+      contentGroupClassName,
+      isLoading = false,
+      disabled = false,
+      focused,
+      notificationBadge,
+      ...props
+    },
+    ref
+  ) => {
     const [isPressed, setIsPressed] = React.useState(false);
     const [isHovered, setIsHovered] = React.useState(false);
 
@@ -138,10 +163,24 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             contentGroupClassName,
             isLoading ? "opacity-0" : "opacity-100",
             !isDisabled && "transition-transform duration-[500ms] ease-[cubic-bezier(0,-0.3,0.5,1.3)]",
-            isHovered && !isDisabled && "scale-[1.05]"
+            isHovered && !isDisabled && "scale-[1.05]",
+            "flex items-center truncate" 
           )}
         >
-          {children}
+          <span className="truncate flex-1"> {}
+            {children}
+          </span>
+          {notificationBadge && (
+            <NotificationBadge
+              quantity={notificationBadge.quantity}
+              variant={notificationBadge.variant}
+              size={notificationBadge.size}
+              stroke={notificationBadge.stroke}
+              strokeType={notificationBadge.strokeType}
+              pulse={notificationBadge.pulse}
+              className="ml-2 flex-shrink-0"
+            />
+          )}
         </span>
       </button>
     );

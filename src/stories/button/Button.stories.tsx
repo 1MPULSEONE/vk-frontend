@@ -137,3 +137,80 @@ export const DisabledSecondary: Story = {
     children: 'None Button',
   },
 };
+
+export const WithBadge: Story = {
+  args: {
+    variant: 'default',
+    children: 'Уведомления',
+    notificationBadge: {
+      quantity: 5, 
+    },
+  },
+};
+
+export const WithBadgeSecondary: Story = {
+  args: {
+    variant: 'secondary',
+    children: 'Уведомления',
+    notificationBadge: {
+      quantity: 3,
+      variant: 'secondary', 
+    },
+  },
+};
+
+export const WithPulsatingBadge: Story = {
+  args: {
+    variant: 'default',
+    children: 'Уведомления',
+    notificationBadge: {
+      quantity: 1,
+      pulse: true, 
+    },
+  },
+};
+
+export const WithStrokedBadge: Story = {
+  args: {
+    variant: 'default',
+    children: 'Уведомления',
+    notificationBadge: {
+      quantity: 7,
+      stroke: true,
+      strokeType: 'dynamic', 
+    },
+  },
+};
+
+export const WithLargeBadge: Story = {
+  args: {
+    variant: 'default',
+    children: 'Уведомления',
+    notificationBadge: {
+      quantity: '99+', 
+      size: 16, 
+    },
+  },
+};
+
+export const WithBadgeAndLoading: Story = {
+  args: {
+    variant: 'default',
+    children: 'Уведомления',
+    isLoading: true,
+    notificationBadge: {
+      quantity: 2,
+    },
+  },
+};
+
+export const WithBadgeAndDisabled: Story = {
+  args: {
+    variant: 'default',
+    children: 'Уведомления',
+    disabled: true, 
+    notificationBadge: {
+      quantity: 8,
+    },
+  },
+};
