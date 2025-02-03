@@ -187,7 +187,7 @@ export const WithLargeBadge: Story = {
     variant: 'default',
     children: 'Уведомления',
     notificationBadge: {
-      quantity: '99+', 
+      quantity: '1', 
       size: 16, 
     },
   },
@@ -209,6 +209,17 @@ export const WithBadgeAndDisabled: Story = {
     variant: 'default',
     children: 'Уведомления',
     disabled: true, 
+    notificationBadge: {
+      quantity: 8,
+    },
+  },
+};
+
+
+export const WithBadgeAndBigText: Story = {
+  args: {
+    variant: 'default',
+    children: 'Скажи как мне быть, если нет стимула',
     notificationBadge: {
       quantity: 8,
     },
