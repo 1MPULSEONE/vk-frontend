@@ -96,7 +96,6 @@ const NotificationBadge = React.forwardRef<HTMLDivElement, NotificationBadgeProp
         })}
         style={{
           ...inlineStyle,
-          "--size": `${size}px`,
         }}
         {...props}
       >
